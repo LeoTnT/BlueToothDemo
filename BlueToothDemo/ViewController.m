@@ -134,7 +134,7 @@
      */
     NSString *localName = [[advertisementData objectForKey:@"kCBAdvDataLocalName"] lowercaseString];
     NSString *peripheralName = [peripheral.name lowercaseString];
-    NSLog(@"广播--:%@ 设备--:%@",localName, peripheralName);
+    NSLog(@"广播--:%@ 设备--:%@ 距离--:%@",localName, peripheralName, RSSI);
     
     //要连接蓝牙的名
     NSString *MyBlueToothName = @"lichao的macbook pro";
@@ -160,8 +160,12 @@
 }
 
 #pragma mark 3 == 成功连接Peripheral
+
+/**
+ 连接设备成功后会调用该方法
+ */
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
-    //连接成功之后寻找服务,传nil会寻找所有服务
+    //传nil会寻找所有服务
     NSLog(@"连接成功");
     [peripheral discoverServices:nil];
     //连接成功, 停止扫描
@@ -169,6 +173,10 @@
 }
 
 #pragma mark 4 == 发现服务
+
+/**
+ 找到server后会调用该方法
+ */
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
 //    for (CBService *service in peripheral.services) {
@@ -177,12 +185,22 @@
 //        [peripheral discoverCharacteristics:nil forService:service];
 //    }
     
+    if (peripheral != self.peripheral) {
+        NSLog(@"Wrong peripheral");
+        return;
+    }
+    if (error) {
+        NSLog(@"Error---%@", error);
+        return;
+    }
+    
     if (!error) {
         for (CBService *service in peripheral.services) {
             NSLog(@"serviceUUID:%@", service.UUID.UUIDString);
             //发现特定服务的特征值
             if ([service.UUID.UUIDString isEqualToString:kServiceUUID]) {
                 [service.peripheral discoverCharacteristics:nil forService:service];
+                return;
             }
         }
     }
@@ -190,32 +208,64 @@
 }
 
 #pragma mark 5 == 发现Characteristics
+
+/**
+ 找到Characteristics后会调用该方法
+ */
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
-    NSLog(@"Characteristics---%@", [service characteristics]);
-    // 遍历服务中所有的特征值
-//    for (CBCharacteristic *characteristic in service.characteristics)
-//    {
-//         NSLog(@"发现--characteristics:%@ for service: %@", characteristic.UUID, service.UUID);
-//    }
+    if (peripheral != self.peripheral) {
+        NSLog(@"Wrong peripheral");
+        return;
+    }
+    if (error) {
+        NSLog(@"Error---%@", error);
+        return;
+    }
     
     // 遍历服务中所有的特征值
-    for (CBCharacteristic *characteristic in service.characteristics)
+    for (CBCharacteristic *characteristic in [service characteristics])
     {
         // 找到我们需要的特征
         if ([characteristic.UUID isEqual:kCharacteristicUUID])
         {
-            NSLog(@"Discovered characteristics:%@ for service: %@", characteristic.UUID, service.UUID);
+            NSLog(@"serviceUUID--:%@", service.UUID);
+            NSLog(@"CharacteristicsUUID--:%@", characteristic.UUID);
+            
+            self.characteristic = characteristic;
             
             /**
                 找到特征以后进行的操作
              */
+//            //我们可以使用readValueForCharacteristic:来读取数据,如果数据是不断更新的，则可以使用setNotifyValue:forCharacteristic:来实现只要有新数据，就获取
+//            [self.peripheral readValueForCharacteristic:self.characteristic];
+            [self.peripheral setNotifyValue:YES forCharacteristic:self.characteristic];
+            
             
             break;
         }  
     }
+    
+    
+    // 遍历服务中所有的特征值
+    //    for (CBCharacteristic *characteristic in service.characteristics)
+    //    {
+    //         NSLog(@"发现--characteristics:%@ for service: %@", characteristic.UUID, service.UUID);
+    //    }
 }
 
+#pragma mark 6 == 处理数据
+
+/**
+ 读取到数据就会调用该方法
+ */
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    NSData *data = characteristic.value;
+    
+    //
+    NSLog(@"data = %@", data);
+}
 
 #pragma mark == 外设断开连接
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
