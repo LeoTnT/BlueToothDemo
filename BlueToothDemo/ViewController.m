@@ -67,7 +67,7 @@
     self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
 
-#pragma mark 1 == UpdataState
+#pragma mark 1 == 更新当前蓝牙状态(是否打开)
 /**
  连接蓝牙前先检查中心的蓝牙是否打开, 确认蓝牙打开后开始扫描蓝牙
  */
@@ -102,7 +102,7 @@
         case CBManagerStatePoweredOn:
             
             NSLog(@"蓝牙已打开");
-            //扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出FFEO这个服务的外设
+            //扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出这个Service的Peripherals
             [self.manager scanForPeripheralsWithServices:nil options:nil];
             break;
         default:
@@ -170,6 +170,13 @@
     [peripheral discoverServices:nil];
     //连接成功, 停止扫描
     [self.manager stopScan];
+}
+/**
+ 连接失败会调用该方法
+ */
+ - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    NSLog(@"连接失败---%@", error);
 }
 
 #pragma mark 4 == 发现服务
@@ -254,7 +261,7 @@
     //    }
 }
 
-#pragma mark 6 == 处理数据
+#pragma mark 6 == 获取设备返回的数据
 
 /**
  读取到数据就会调用该方法
@@ -267,15 +274,31 @@
     NSLog(@"data = %@", data);
 }
 
+#pragma mark Other == 数据交互
+
+/**
+ 向设备写数据
+
+ @param data 要写入的数据
+ */
+- (void)writeValue:(NSData *)data
+{
+    [self.peripheral writeValue:data forCharacteristic:self.characteristic type:CBCharacteristicWriteWithResponse];
+}
+
+/**
+ 当writeValue: forCharacteristic: type:方法被调用的时候就会调用该方法
+ */
+- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+
+{
+    //查询数据是否写入
+    NSLog(@"%@", characteristic.value);
+}
+
 #pragma mark == 外设断开连接
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
     NSLog(@"连接中断---%@", error);
-}
-
-#pragma mark -- 连接失败
-- (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
-{
-    NSLog(@"连接失败---%@", error);
 }
 
 
