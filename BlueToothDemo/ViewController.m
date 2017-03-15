@@ -55,9 +55,6 @@
 @property(nonatomic, strong) CBPeripheral *peripheral;
 //蓝牙设备读写服务操作对象
 @property(nonatomic, strong) CBCharacteristic *characteristic;
-//定时器
-@property(nonatomic, strong) NSTimer *connectTimer;
-
 
 @end
 
@@ -66,12 +63,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    //初始化
     self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    //创建数组来管理外设
-//    self.peripherals = [NSMutableArray array];
-    
 }
-
 
 #pragma mark 1 == UpdataState
 /**
@@ -118,7 +112,6 @@
             break;
     }
 }
-
 
 #pragma mark 2 == 发现外设
 /**
@@ -175,7 +168,7 @@
     [self.manager stopScan];
 }
 
-#pragma mark == 发现服务
+#pragma mark 4 == 发现服务
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
 //    for (CBService *service in peripheral.services) {
@@ -196,7 +189,7 @@
 
 }
 
-#pragma mark == 发现Characteristics
+#pragma mark 5 == 发现Characteristics
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
     NSLog(@"Characteristics---%@", [service characteristics]);
@@ -214,8 +207,6 @@
         {
             NSLog(@"Discovered characteristics:%@ for service: %@", characteristic.UUID, service.UUID);
             
-//            _readCharacteristic = characteristic;//保存读的特征
-            
             /**
                 找到特征以后进行的操作
              */
@@ -223,7 +214,6 @@
             break;
         }  
     }
-    
 }
 
 
