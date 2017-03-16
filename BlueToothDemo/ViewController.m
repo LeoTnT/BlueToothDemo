@@ -63,6 +63,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+}
+
+//单击屏幕进行test
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
     //初始化
     self.manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
