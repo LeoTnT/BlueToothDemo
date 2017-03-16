@@ -1,27 +1,25 @@
 # BlueToothDemo
 
-
 这篇文章主要包括iOS蓝牙开发的简介以及如果进行蓝牙开发, 具体的蓝牙知识不再详细介绍了.
-
-iOS蓝牙开发的实现基本上都是基于<CoreBlueTooth.framework>这个框架的, 这是目前世界上最流行的框架
+>iOS蓝牙开发的实现基本上都是基于<CoreBlueTooth.framework>这个框架的, 这是目前世界上最流行的框架
 可用于第三方蓝牙设备交互, 必须要支持蓝牙4.0
 硬件至少是4s, 系统至少是iOS6
 蓝牙4.0以低功耗著称, 一般也叫BLE(BlueTooth Low Energy)
-Core Bluetooth的基本常识
 
-每个蓝牙4.0设备都是通过服务(Service)和特征(Characteristic)来展示自己的
-一个设备包含一个或多个服务, 每个服务下面又包含若干个特征
-特征是与人交互的最小单位
-服务特征都是用UUID来唯一标识的, 通过UUID就能区别不同的服务和特征
-设备里面各个服务和特征的功能, 都是由蓝牙设备硬件厂商提供, 比如哪些是用来交互, 哪些可以获取模块信息等等.
-Core Bluetooth的开发步骤
+###Core Bluetooth的基本常识
+***
+>*  每个蓝牙4.0设备都是通过服务(Service)和特征(Characteristic)来展示自己的
+*  一个设备包含一个或多个服务, 每个服务下面又包含若干个特征
+*  特征是与人交互的最小单位
+*  服务特征都是用UUID来唯一标识的, 通过UUID就能区别不同的服务和特征
+*  设备里面各个服务和特征的功能, 都是由蓝牙设备硬件厂商提供, 比如哪些是用来交互, 哪些可以获取模块信息等等.
 
-建立中心设备:
+###Core Bluetooth的开发步骤
+***
+#####建立中心设备:
+`CBCentralManager *manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];`
 
-CBCentralManager *manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-
-扫描外设:
-
+#####扫描外设:
 #pragma mark 1
 //扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出这个Service的Peripherals
 [self.manager scanForPeripheralsWithServices:nil options:nil];
@@ -71,8 +69,7 @@ NSLog(@"连接成功");
 {
 NSLog(@"连接失败---%@", error);
 }
-连接外设:
-
+#####连接外设:
 //连接指定的设备
 - (BOOL)connect:(CBPeripheral *)peripheral
 {
@@ -82,8 +79,7 @@ NSLog(@"正在连接指定设备");
 
 return (YES);  
 }
-扫描外设中的服务和特征:
-
+#####扫描外设中的服务和特征:
 #pragma mark 4 == 发现服务
 /**
 找到server后会调用该方法
@@ -150,8 +146,8 @@ break;
 }  
 }
 }
-利用特征与外设做数据交互
 
+#####利用特征与外设做数据交互
 #pragma mark 6 == 获取设备返回的数据
 /**
 读取到数据就会调用该方法
@@ -185,10 +181,13 @@ NSLog(@"data = %@", data);
 //查询数据是否写入
 NSLog(@"%@", characteristic.value);
 }
-断开连接
-
+#####断开连接
 #pragma mark == 外设断开连接
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
 NSLog(@"连接中断---%@", error);
 }
-这只是蓝牙开发的一个流程, 真正用到项目中的话还是需要自己不断学习和了解才能运用到蓝牙项目当中. 不过当你真正了解了蓝牙的相关知识就会发现, 实际上比想象的要更简单.
+
+
+######这只是蓝牙开发的一个流程, 真正用到项目中的话还是需要自己不断学习和了解才能运用到蓝牙项目当中. 不过当你真正了解了蓝牙的相关知识就会发现, 实际上比想象的要更简单.
+附上demo链接, 如有不懂, 请下载demo另行查看:
+https://github.com/LeoTnT/BlueToothDemo
