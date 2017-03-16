@@ -8,7 +8,7 @@
 
 ###Core Bluetooth的基本常识
 ***
->*  每个蓝牙4.0设备都是通过服务(Service)和特征(Characteristic)来展示自己的
+>* 每个蓝牙4.0设备都是通过服务(Service)和特征(Characteristic)来展示自己的
 *  一个设备包含一个或多个服务, 每个服务下面又包含若干个特征
 *  特征是与人交互的最小单位
 *  服务特征都是用UUID来唯一标识的, 通过UUID就能区别不同的服务和特征
@@ -17,50 +17,50 @@
 ###Core Bluetooth的开发步骤
 ***
 #####建立中心设备:
-`CBCentralManager *manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];`
+    CBCentralManager *manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 
 #####扫描外设:
-#pragma mark 1
+    #pragma mark 1
 //扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出这个Service的Peripherals
-[self.manager scanForPeripheralsWithServices:nil options:nil];
+    [self.manager scanForPeripheralsWithServices:nil options:nil];
 
-#pragma mark 2 == 发现外设
-/**
-成功扫描到了蓝牙会自动进入:didDiscoverPeripheral这个函数
+    #pragma mark 2 == 发现外设
+    /**
+    成功扫描到了蓝牙会自动进入:didDiscoverPeripheral这个函数
 
-@param peripheral peripheral.name 扫描到的蓝牙的名字
-@param RSSI 距离
-*/
-- (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI
-{
-NSString *localName = [[advertisementData objectForKey:@"kCBAdvDataLocalName"] lowercaseString];
-NSString *peripheralName = [peripheral.name lowercaseString];
-NSLog(@"广播--:%@ 设备--:%@ 距离--:%@",localName, peripheralName, RSSI);
+    @param peripheral peripheral.name 扫描到的蓝牙的名字
+    @param RSSI 距离
+    */
+    - (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary<NSString *,id> *)advertisementData RSSI:(NSNumber *)RSSI
+    {
+        NSString *localName = [[advertisementData objectForKey:@"kCBAdvDataLocalName"] lowercaseString];
+        NSString *peripheralName = [peripheral.name lowercaseString];
+        NSLog(@"广播--:%@ 设备--:%@ 距离--:%@",localName, peripheralName, RSSI);
 
-//要连接蓝牙的名
-NSString *MyBlueToothName = @"要连接蓝牙的名";
-self.peripheral = peripheral;
+        //要连接蓝牙的名
+        NSString *MyBlueToothName = @"要连接蓝牙的名";
+        self.peripheral = peripheral;
 
-/**
-连接设备
-*/
-if ([localName isEqualToString:MyBlueToothName ]|| [peripheralName isEqualToString:MyBlueToothName]) {
-self.peripheral.delegate = self;
-[self connect:peripheral];
-}
-}
+        /**
+        连接设备
+        */
+        if ([localName isEqualToString:MyBlueToothName ]|| [peripheralName isEqualToString:MyBlueToothName]) {
+            self.peripheral.delegate = self;
+            [self connect:peripheral];
+        }
+    }
 
-#pragma mark 3 == 成功连接Peripheral
-/**
-连接设备成功后会调用该方法
-*/
-- (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
-//传nil会寻找所有服务
-NSLog(@"连接成功");
-[peripheral discoverServices:nil];
-//连接成功, 停止扫描
-[self.manager stopScan];
-}
+    #pragma mark 3 == 成功连接Peripheral
+    /**
+    连接设备成功后会调用该方法
+    */
+    - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
+        //传nil会寻找所有服务
+        NSLog(@"连接成功");
+        [peripheral discoverServices:nil];
+        //连接成功, 停止扫描
+        [self.manager stopScan];
+    }
 
 /**
 连接失败会调用该方法
