@@ -81,7 +81,7 @@
         return (YES);  
     }
 ##### 扫描外设中的服务和特征:
-#pragma mark 4 == 发现服务
+    #pragma mark 4 == 发现服务
     /**
     找到server后会调用该方法
     */
@@ -108,7 +108,7 @@
         }
     }
 
-#pragma mark 5 == 发现Characteristics
+    #pragma mark 5 == 发现Characteristics
 
     /**
     找到Characteristics后会调用该方法
@@ -149,7 +149,7 @@
     }
 
 ##### 利用特征与外设做数据交互
-#pragma mark 6 == 获取设备返回的数据
+    #pragma mark 6 == 获取设备返回的数据
     /**
     读取到数据就会调用该方法
     */
