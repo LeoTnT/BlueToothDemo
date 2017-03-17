@@ -21,8 +21,8 @@
     CBCentralManager *manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 
 ##### 扫描外设:
-#pragma mark 1
-//扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出这个Service的Peripherals
+    #pragma mark 1
+    //扫描语句:写nil表示扫描所有的蓝牙外设,如果传上面的kServiceUUID, 那么只能扫描出这个Service的Peripherals
     [self.manager scanForPeripheralsWithServices:nil options:nil];
 
     #pragma mark 2 == 发现外设
@@ -189,6 +189,6 @@
     }
 
 
-###### 这只是蓝牙开发的一个流程, 真正用到项目中的话还是需要自己不断学习和了解才能运用到蓝牙项目当中. 不过当你真正了解了蓝牙的相关知识就会发现, 实际上比想象的要更简单.
+##### 这只是蓝牙开发的一个流程, 真正用到项目中的话还是需要自己不断学习和了解才能运用到蓝牙项目当中. 不过当你真正了解了蓝牙的相关知识就会发现, 实际上比想象的要更简单.
 附上demo链接, 如有不懂, 请下载demo另行查看:
 https://github.com/LeoTnT/BlueToothDemo
